@@ -14,7 +14,7 @@ fi
 
 #creating the required files if they dont exist
 folders=("/data/" "/data/web_static/" "/data/web_static/releases/"
-	"/data/web_static/shared/" "data/web_static/realeases/test/")
+	"/data/web_static/shared/" "data/web_static/releases/test/")
 for folder in "${folders[@]}"
 do
 	if [ ! -d "$folder" ]; then
@@ -27,8 +27,8 @@ do
 	fi
 done
 
-#creating index.html in data/web_static/realeases/test/index.html with content
-the_index="/data/web_static/realeases/test/index.html"
+#creating index.html in data/web_static/releases/test/index.html with content
+the_index="/data/web_static/releases/test/index.html"
 if [ ! -f "$the_index" ]; then
 	echo "will create the $the_index now"
 	sudo sh -c 'echo "<html><head></head><body>Holberton School
@@ -46,18 +46,20 @@ if [ -L "$current_link" ]; then
 	sudo rm $current_link
 fi
 echo "creating new symbolic link"
-sudo ln -s /data/web_static/realeases/test/$current_link
+sudo ln -s /data/web_static/releases/test $current_link
 
 #updating the nginx configuration
 nginx_config="/etc/nginx/sites-available/default"
 
 if [ -f "$nginx_config" ]; then
-	sudo sed -i '/^server {/a location /hbnb_static {\n 
-	alias /data/web_static/current/;\n}\n' $nginx_config
+	sudo sed -i "/^server {/a location /hbnb_static {\n 
+	alias /data/web_static/current/;\n}\n" $nginx_config
 	echo "nginx configuration done"
 else
 	echo "configuration not found"
 
 fi
+
+nginx -t
 
 sudo service nginx restart
