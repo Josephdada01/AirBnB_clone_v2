@@ -15,8 +15,8 @@ folders=("/data/" "/data/web_static/" "/data/web_static/releases/" "/data/web_st
 for folder in "${folders[@]}"; do
     if [ ! -d "$folder" ]; then
         echo "Creating $folder"
-        sudo mkdir -p $folder
-        sudo chown -R ubuntu:ubuntu $folder
+        sudo mkdir -p "$folder"
+        sudo chown -R ubuntu:ubuntu "$folder"
     else
         echo "$folder already exists."
     fi
