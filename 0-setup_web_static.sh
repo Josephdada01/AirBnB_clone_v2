@@ -26,7 +26,7 @@ done
 index_file="/data/web_static/releases/test/index.html"
 if [ ! -f "$index_file" ]; then
     echo "Creating $index_file"
-    sudo sh -c 'echo "<html><body>Hello, this is a test page</body></html>" > '"$index_file"
+    sudo sh -c 'echo "<html><head></head><body>Holberton school</body></html>" > '"$index_file"
     sudo chown ubuntu:ubuntu $index_file
     echo "Index file created"
 else
