@@ -32,9 +32,10 @@ def do_pack():
     """running the tar command to create the archive"""
 
     print("Archive path:", archive_path)
-    outcome = local("tar -cvzf {} {}".format(archive_path, content), capture=True)
-    print(outcome.stdout)
+    """This means ouctome 'out' """
+    out = local("tar -cvzf {} {}".format(archive_path, content), capture=True)
+    print(out.stdout)
 
-    if outcome.succeeded:
+    if out.succeeded:
         return archive_path
     return None
