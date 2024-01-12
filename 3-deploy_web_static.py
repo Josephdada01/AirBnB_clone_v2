@@ -8,6 +8,7 @@ from fabric.api import local, run, env, put
 """Define the remote servers"""
 env.hosts = ["52.201.229.78", "54.87.205.191"]
 
+
 def do_pack():
     """
     the fuction will return the archive path if the archive has
@@ -67,7 +68,6 @@ def do_deploy(archive_path):
         run("mkdir -p {}".format(file_dir))
         run("tar -xvf {} -C {}".format(archived_file, file_dir))
         run("rm {}".format(archived_file))
-        
         """Move files, create symbolic link, and clean up"""
         run("mv {}web_static/* {}".format(file_dir, file_dir))
         run("rm -rf {}web_static".format(file_dir))
