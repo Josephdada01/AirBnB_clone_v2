@@ -1,82 +1,97 @@
 #!/usr/bin/python3
-"""
-Write a Fabric script (based on the file 1-pack_web_static.py) that
-distributes an archive to my web servers, using the function do_deploy
-"""
-from fabric.api import local, run, env, put
-from fabric.contrib.files import exists
-from datetime import datetime
+"""2-do_deploy_web_static module"""
 import os
+from datetime import datetime
+from fabric.api import local, run, env, put
 
 
 env.hosts = ["52.201.229.78", "54.87.205.191"]
 
 
 def do_pack():
+    """Fabric script that generates a .tgz archive
+    from the contents of the web_static folder of
+    your AirBnB Clone repo
     """
-    the fuction will return the archive path if the archive has
-    been correctly generated
-    """
 
-    """ this create the version folder if it doesnt exists """
+    """Check if version dir exits:"""
+    path = "versions"
+    if not os.path.exists(path):
+        os.makedirs(path)
 
-    the_path = "versions"
-    if not os.path.exists(the_path):
-        os.makedirs(the_path)
+    """Get the current time and date"""
+    currentDateAndTime = datetime.now()
+    archiveTime = currentDateAndTime.strftime("%Y%m%d%H%M%S")
 
-    """ once the acrchive name is created the time stamp will be there"""
-    now = datetime.now()
-    time_stamp = now.strftime("%Y%m%d%H%M%S")
+    """Naming of the archive file"""
+    name_of_archive = "web_static_{}.tgz".format(archiveTime)
 
-    archive_name = "web_static_{}.tgz".format(time_stamp)
-    archive_path = "{}/{}".format(the_path, archive_name)
+    archive_path = "{}/{}".format(path, name_of_archive)
 
     content = "web_static"
 
-    """running the tar command to create the archive"""
+    """Using of the tar command"""
+    result = local("tar -cvzf {} {}".format(archive_path, content))
 
-    print("Archive path:", archive_path)
-    """This means ouctome 'out' """
-    out = local("tar -cvzf {} {}".format(archive_path, content), capture=True)
-    print(out.stdout)
-
-    if out.succeeded:
+    if result.succeeded:
         return archive_path
+
     return None
 
 
 def do_deploy(archive_path):
-    """
-    function that distribute an archive to web servers
-    Args: archive_path(str) the path to file
-    returns: true if all operations have been successful
+    """Distributes an archive to your web servers,
+    using the function do_deploy
+    Args:
+        archive_path: path to the archive
+    Return:
+        True if sucessfully and False otherwise.
     """
 
-    if not exists(archive_path):
+    """If archive_path does not exit"""
+    if not os.path.exists(archive_path):
         return False
 
     try:
-        """ updating the archive to the tmp file"""
-        put(archive_path, '/tmp/')
+        archived_file = archive_path[9:]
 
-        """
-        Extracting the archive to data/web/releases/filename without
-        extension
-        """
-        archive_filename = archive_path.split("/")[-1]
-        folder_name = archive_filename.split(".")[0]
-        release_path = f'/data/web_static/releases/{folder_name}'
-        run(f'mkdir -p {realease_path}')
-        run(f'tar -xzf /tmp/{archive_filename} -C {release_path}')
-        """ delete the archive from the webserver"""
-        run(f'rm /tmp/{archive_filename}')
+        """Without the extension."""
+        file_without_ext = archived_file[:-4]
 
-        """ delete symbolic link /data/web_static/current"""
-        run('rm -rf /data/web_static/current')
+        """Full path without the extension of the file"""
+        file_dir = "/data/web_static/releases/{}/".format(
+                file_without_ext)
 
-        """create a new symbolic link /data/webstatic/current"""
-        run(f'ln -s {release_path} /data/web_static/current')
+        """Retrive the file name"""
+        archived_file = "/tmp/" + archive_path[9:]
+
+        """Upload to /tmp/ directory of the server"""
+        put(archive_path, "/tmp/")
+
+        """Create the directory & Uncompress the file"""
+        run("mkdir -p {}".format(file_dir))
+
+        run(
+                "tar -xvf {} -C {}".format(
+                    archived_file,
+                    file_dir
+                    )
+                )
+
+        """Remove thr archived file"""
+        run("rm {}".format(archived_file))
+
+        run("mv {}web_static/* {}".format(file_dir, file_dir))
+
+        run("rm -rf {}web_static".format(file_dir))
+
+        run("rm -rf {}".format("/data/web_static/current"))
+
+        """Create a symbolic link"""
+        run("ln -s {} /data/web_static/current".format(file_dir))
+
         print("New version deployed!")
+
         return True
     except Exception as e:
         return False
