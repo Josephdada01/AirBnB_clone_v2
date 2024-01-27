@@ -1,6 +1,7 @@
 #!/usr/bin/python3
 """ a script that starts a Flask web application"""
 from flask import Flask, abort, render_template
+from markupsafe import escape
 
 
 app = Flask(__name__)
@@ -50,8 +51,8 @@ def display_n(n):
         abort(404)
 
 
-@app.route('/number/<n>', strict_slashes=False)
-def number_template(n):
+@app.route('/number_template/<n>', strict_slashes=False)
+def display_number_template(n):
     """display a HTML page only if n is an integer:"""
     try:
         n = int(n)
