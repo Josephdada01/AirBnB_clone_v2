@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 """ a script that starts a Flask web application:"""
-from flask import Flask
+from flask import Flask, escape
 
 
 app = Flask(__name__)
@@ -25,7 +25,7 @@ def display_text(text):
     (replace underscore _ symbols with a space )
     """
     text = text.replace('_', ' ')
-    return f'C {escape(text)}'
+    return 'C {}'.format(escape(text))
 
 
 if __name__ == '__main__':
