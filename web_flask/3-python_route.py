@@ -27,6 +27,7 @@ def display_text(text):
     text = text.replace('_', ' ')
     return 'C {}'.format(escape(text))
 
+
 @app.route('/python', strict_slashes=False)
 @app.route('/python/', strict_slashes=False)
 @app.route('/python/<text>', strict_slashes=False)
