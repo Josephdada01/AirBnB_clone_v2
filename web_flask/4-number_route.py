@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 """ a script that starts a Flask web application"""
-from flask import Flask
+from flask import Flask, abort
 from markupsafe import escape
 
 
@@ -41,13 +41,14 @@ def display_python_text(text="is cool"):
     return 'Python {}'.format(escape(new_text))
 
 
-@app.route('/number', strict_slashes=False)
-@app.route('/number/', strict_slashes=False)
 @app.route('/number/<n>', strict_slashes=False)
 def display_n(n):
     """display “n is a number” only if n is an integer"""
-    if type(n) == int:
-        return "{} is a number".format(n)
+    try:
+        if type(n) == int:
+            return "{} is a number".format(n)
+    except ValueError:
+        abort(404)
 
 
 if __name__ == '__main__':
