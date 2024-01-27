@@ -126,5 +126,5 @@ sudo service nginx restart
 #     sudo service nginx restart
 #     echo "Nginx restarted"
 # else
-#     echo "Nginx configuratio file not found"
+#     echo "Nginx configuratiocd  file not found"
 # fi
