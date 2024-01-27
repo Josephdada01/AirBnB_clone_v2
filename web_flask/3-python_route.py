@@ -33,8 +33,9 @@ def display_python_text(text="is cool"):
     """
     display “Python ”, followed by the value of the text variable
     """
-    text = text.replace('_', ' ')
-    return 'Python {}'.format(escape(text))
+    normal_text = "{}".format(text)
+    new_text = normal_text.replace('_', ' ')
+    return 'Python {}'.format(escape(new_text))
 
 
 if __name__ == '__main__':
