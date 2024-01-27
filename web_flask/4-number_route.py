@@ -45,8 +45,8 @@ def display_python_text(text="is cool"):
 def display_n(n):
     """display “n is a number” only if n is an integer"""
     try:
-        if isinstance(n, int):
-            return "{} is a number".format(n)
+        n = int(n)
+        return "{} is a number".format(n)
     except ValueError:
         abort(404)
 
