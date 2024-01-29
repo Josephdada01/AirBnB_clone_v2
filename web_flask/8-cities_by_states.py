@@ -22,7 +22,10 @@ def cities_by_states():
 
 @app.teardown_appcontext
 def teardown_appcontext(exception):
-    """each request you must remove the current SQLAlchemy Session"""
+    """
+    to perform cleanup or resource release operations
+    after each request has been processed
+    """
     storage.close()
 
 
