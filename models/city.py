@@ -10,9 +10,11 @@ from os import getenv
 class City(BaseModel, Base):
     """ The city class, contains state ID and name """
 
-    __tablename__ = 'cities'
-
     if getenv("HBNB_TYPE_STORAGE") == "db":
+        __tablename__ = 'cities'
+
+        id = Column(String(60), primary_key=True, nullable=False)
+
         state_id = Column(
                 String(60),
                 ForeignKey('states.id'), nullable=False
@@ -27,3 +29,7 @@ class City(BaseModel, Base):
     else:
         name = ""
         state_id = ""
+
+    def __init__(self, *args, **kwargs):
+        """initialize city"""
+        super().__init__(*args, **kwargs)

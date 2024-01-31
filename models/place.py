@@ -25,9 +25,8 @@ if getenv('HBNB_TYPE_STORAGE') == 'db':
 
 class Place(BaseModel, Base):
     """ A place to stay """
-    __tablename__ = 'places'
-
     if getenv("HBNB_TYPE_STORAGE") == "db":
+        __tablename__ = 'places'
         city_id = Column(
             String(60),
             ForeignKey('cities.id'),
@@ -104,7 +103,13 @@ class Place(BaseModel, Base):
         price_by_night = 0
         latitude = 0.0
         longitude = 0.0
+        amenity_ids = []
 
+    def __init__(self, *args, **kwargs):
+        """initializes place"""
+        super().__init__(*args, **kwargs)
+        
+            
     @property
     def reviews(self):
         """
@@ -123,13 +128,12 @@ class Place(BaseModel, Base):
                 matching_reviews.append(value)
 
         return matching_reviews
-
+    """
     @property
     def amenities(self):
-        """
+
         returns the list of Amenity instances based on the attribute
         amenity_ids that contains all Amenity.id linked to the Place
-        """
 
         amenities_list = []
 
@@ -140,6 +144,14 @@ class Place(BaseModel, Base):
                 amenities_list.append(amenity)
 
         return amenities_list
+    """
+
+    @property
+    def amenities(self):
+        """
+        Returns the list of Amenity instances linked to the Place.
+        """
+        return self.amenities
     
     @amenities.setter
     def amenities(self, amenity):

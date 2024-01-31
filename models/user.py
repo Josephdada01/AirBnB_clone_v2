@@ -5,17 +5,15 @@ from sqlalchemy import Column, String
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship
 import models
-import os
+from os import getenv
 
 
 class User(BaseModel, Base):
     """This class defines a user by various attributes s"""
 
-    __tablename__ = 'users'
+    if getenv('HBNB_TYPE_STORAGE') == 'db':
 
-    storage_type = os.getenv('HBNB_TYPE_STORAGE')
-
-    if storage_type == 'db':
+        __table__ = 'users'
         email = Column(String(128), nullable=False)
 
         password = Column(String(128), nullable=False)
@@ -38,3 +36,7 @@ class User(BaseModel, Base):
         password = ''
         first_name = ''
         last_name = ''
+
+    def __init__(self, *args, **kwargs):
+        """initialize users"""
+        super().init__(*args, **kwargs)
