@@ -1,6 +1,7 @@
 #!/usr/bin/python3
 """ Place Module for HBNB project """
 from models.base_model import BaseModel, Base
+from models.amenity import Amenity
 from sqlalchemy import Column, String, Integer, Float, ForeignKey
 from sqlalchemy.orm import relationship
 from sqlalchemy.ext.declarative import declarative_base
@@ -15,10 +16,10 @@ class Place(BaseModel, Base):
 
     if getenv("HBNB_TYPE_STORAGE") == "db":
         city_id = Column(
-                String(60),
-                ForeignKey('cities.id'),
-                nullable=False
-                )
+            String(60),
+            ForeignKey('cities.id'),
+            nullable=False
+            )
 
         user_id = Column(
                 String(60),
@@ -73,6 +74,10 @@ class Place(BaseModel, Base):
                 "Review",
                 backref="place",
                 )
+        amenities = relationship("Amenity",
+                                 secondary='place_amenity',
+                                 viewonly=False,
+                                 back_populates="place_amenities")
     else:
         city_id = ""
         user_id = ""
@@ -103,3 +108,30 @@ class Place(BaseModel, Base):
                 matching_reviews.append(value)
 
         return matching_reviews
+
+    @property
+    def amenities(self):
+        """
+        returns the list of Amenity instances based on the attribute
+        amenity_ids that contains all Amenity.id linked to the Place
+        """
+
+        amenities_list = []
+
+        amenities_obj = models.storage.all(Amenity)
+
+        for amenity in amenities_obj.values():
+            if self.id in amenity.amenity_ids:
+                amenities_list.append(amenity)
+
+        return amenities_list
+
+    @amenities.setter
+    def amenities(self, amenity):
+        """
+        handles append method for adding an Amenity.id to the
+        attribute amenity_ids.
+        """
+        if isinstance(amenity, Amenity):
+            if amenity.id not in self.amenity_ids:
+                self.amenity_ids.append(amenity.id)
