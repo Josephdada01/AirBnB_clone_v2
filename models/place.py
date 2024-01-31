@@ -2,13 +2,26 @@
 """ Place Module for HBNB project """
 from models.base_model import BaseModel, Base
 from models.amenity import Amenity
-from sqlalchemy import Column, String, Integer, Float, ForeignKey
+from sqlalchemy import Column, String, Integer, Float, ForeignKey, Table
 from sqlalchemy.orm import relationship
 from sqlalchemy.ext.declarative import declarative_base
 from models.review import Review
 from os import getenv
 import models
 
+if getenv('HBNB_TYPE_STORAGE') == 'db':
+    place_amenity = Table(
+            'place_amenity',
+            Base.metadata,
+            Column(
+                'place_id', String(60), ForeignKey('places.id'),
+                primary_key=True, nullable=False
+                ),
+            Column(
+                'amenity_id', String(60), ForeignKey('amenities.id'),
+                primary_key=True, nullable=False
+                )
+        )
 
 class Place(BaseModel, Base):
     """ A place to stay """
@@ -33,7 +46,8 @@ class Place(BaseModel, Base):
                 )
 
         description = Column(
-                String(1024)
+                String(1024),
+                nullable=True
                 )
 
         number_rooms = Column(
@@ -73,6 +87,7 @@ class Place(BaseModel, Base):
         reviews = relationship(
                 "Review",
                 backref="place",
+                cascade="all, delete"
                 )
         amenities = relationship("Amenity",
                                  secondary='place_amenity',
@@ -125,13 +140,15 @@ class Place(BaseModel, Base):
                 amenities_list.append(amenity)
 
         return amenities_list
-
+    
     @amenities.setter
     def amenities(self, amenity):
         """
-        handles append method for adding an Amenity.id to the
-        attribute amenity_ids.
+        Handles append method for adding an Amenity
+        to the amenities relationship.
         """
         if isinstance(amenity, Amenity):
-            if amenity.id not in self.amenity_ids:
-                self.amenity_ids.append(amenity.id)
+            if amenity not in self.amenities:
+                self.amenities.append(amenity)
+
+

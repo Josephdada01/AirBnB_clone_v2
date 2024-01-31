@@ -4,7 +4,7 @@ from models.base_model import BaseModel, Base
 from sqlalchemy import Column, String, ForeignKey
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship
-import os
+from os import getenv
 
 
 class City(BaseModel, Base):
@@ -12,7 +12,7 @@ class City(BaseModel, Base):
 
     __tablename__ = 'cities'
 
-    if (os.environ.get("HBNB_TYPE_STORAGE", "file") == "db"):
+    if getenv("HBNB_TYPE_STORAGE") == "db":
         state_id = Column(
                 String(60),
                 ForeignKey('states.id'), nullable=False
@@ -22,7 +22,7 @@ class City(BaseModel, Base):
 
         places = relationship("Place",
                               backref="cities",
-                              cascade="delete"
+                              cascade="all, delete"
                               )
     else:
         name = ""
