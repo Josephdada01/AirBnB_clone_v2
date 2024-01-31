@@ -13,7 +13,7 @@ class User(BaseModel, Base):
 
     if getenv('HBNB_TYPE_STORAGE') == 'db':
 
-        __table__ = 'users'
+        __tablename__ = 'users'
         email = Column(String(128), nullable=False)
 
         password = Column(String(128), nullable=False)
