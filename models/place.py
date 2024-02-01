@@ -1,27 +1,51 @@
 #!/usr/bin/python3
+""" State Module for HBNB project """
+from models.base_model import BaseModel, Base
+from sqlalchemy import Column, String, Integer, Float, ForeignKey
+from sqlalchemy.orm import relationship
+from os import getenv
+
+
+class Amenity(BaseModel, Base):
+    """Amenity class"""
+    if getenv('HBNB_TYPE_STORAGE') == 'db':
+        __tablename__ = 'amenities'
+        name = Column(String(128), nullable=False)
+        
+        places = relationship("Place",
+                              secondary='place_amenity',
+                              viewonly=False,
+                              back_populates="amenities")
+    else:
+        name = ""
+
+    def __init__(self, *args, **kwargs):
+        """intializing amenity"""
+        super().__init__(*args, **kwargs)
+
+#!/usr/bin/python3
 """ Place Module for HBNB project """
 from models.base_model import BaseModel, Base
 from models.amenity import Amenity
+from models.review import Review
 from sqlalchemy import Column, String, Integer, Float, ForeignKey, Table
 from sqlalchemy.orm import relationship
-from sqlalchemy.ext.declarative import declarative_base
-from models.review import Review
 from os import getenv
 import models
 
 if getenv('HBNB_TYPE_STORAGE') == 'db':
     place_amenity = Table(
-            'place_amenity',
-            Base.metadata,
-            Column(
-                'place_id', String(60), ForeignKey('places.id'),
-                primary_key=True, nullable=False
-                ),
-            Column(
-                'amenity_id', String(60), ForeignKey('amenities.id'),
-                primary_key=True, nullable=False
-                )
+        'place_amenity',
+        Base.metadata,
+        Column(
+            'place_id', String(60), ForeignKey('places.id'),
+            primary_key=True, nullable=False
+        ),
+        Column(
+            'amenity_id', String(60), ForeignKey('amenities.id'),
+            primary_key=True, nullable=False
         )
+    )
 
 class Place(BaseModel, Base):
     """ A place to stay """
@@ -31,7 +55,7 @@ class Place(BaseModel, Base):
             String(60),
             ForeignKey('cities.id'),
             nullable=False
-            )
+        )
 
         user_id = Column(
                 String(60),
@@ -91,7 +115,7 @@ class Place(BaseModel, Base):
         amenities = relationship("Amenity",
                                  secondary='place_amenity',
                                  viewonly=False,
-                                 back_populates="place_amenities")
+                                 back_populates="places")
     else:
         city_id = ""
         user_id = ""
@@ -105,11 +129,6 @@ class Place(BaseModel, Base):
         longitude = 0.0
         amenity_ids = []
 
-    def __init__(self, *args, **kwargs):
-        """initializes place"""
-        super().__init__(*args, **kwargs)
-        
-            
     @property
     def reviews(self):
         """
@@ -128,12 +147,14 @@ class Place(BaseModel, Base):
                 matching_reviews.append(value)
 
         return matching_reviews
-    """
+    
     @property
     def amenities(self):
 
+        """
         returns the list of Amenity instances based on the attribute
         amenity_ids that contains all Amenity.id linked to the Place
+        """
 
         amenities_list = []
 
@@ -144,23 +165,3 @@ class Place(BaseModel, Base):
                 amenities_list.append(amenity)
 
         return amenities_list
-    """
-
-    @property
-    def amenities(self):
-        """
-        Returns the list of Amenity instances linked to the Place.
-        """
-        return self.amenities
-    
-    @amenities.setter
-    def amenities(self, amenity):
-        """
-        Handles append method for adding an Amenity
-        to the amenities relationship.
-        """
-        if isinstance(amenity, Amenity):
-            if amenity not in self.amenities:
-                self.amenities.append(amenity)
-
-
